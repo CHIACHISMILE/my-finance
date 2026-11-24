@@ -1,5 +1,5 @@
-const CACHE='myfinance-shell-v1.5-categories';
-const SHELL=['./index.html','./manifest.json','./icon.png'];
+const CACHE='myfinance-shell-v1.5.1-soft-nordic';
+const SHELL=['./index.html','./manifest.json?v=1.5.1','./icon.png?v=1.5.1'];
 self.addEventListener('install',e=>e.waitUntil((async()=>{const c=await caches.open(CACHE);await c.addAll(SHELL.map(url=>new Request(url,{cache:'reload'})));await self.skipWaiting()})()));
 self.addEventListener('activate',e=>e.waitUntil((async()=>{for(const k of await caches.keys())if(k.startsWith('myfinance-shell-')&&k!==CACHE)await caches.delete(k);await self.clients.claim()})()));
 self.addEventListener('fetch',e=>{const u=new URL(e.request.url),scope=new URL(self.registration.scope);if(e.request.method!=='GET'||u.origin!==scope.origin||!['','index.html','manifest.json','icon.png'].some(p=>u.pathname===scope.pathname+p))return;e.respondWith((async()=>{const c=await caches.open(CACHE);try{const r=await fetch(e.request.url,{cache:'no-store',credentials:'same-origin'});if(r.ok){await c.put(e.request,r.clone());if(e.request.mode==='navigate')await c.put('./index.html',r.clone())}return r}catch{const cached=await c.match(e.request)||((e.request.mode==='navigate')?await c.match('./index.html'):null);return cached||new Response('MyFinance 暫時離線，請連線後重新開啟。',{status:503,headers:{'Content-Type':'text/plain;charset=utf-8'}})}})())});
