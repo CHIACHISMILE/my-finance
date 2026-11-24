@@ -1,0 +1,17 @@
+{
+  "fields": {
+    "id": {"stringValue": "RECORD_ID"},
+    "type": {"stringValue": "expense"},
+    "category": {"stringValue": "早餐"},
+    "note": {"stringValue": "早餐-711"},
+    "amount": {"integerValue": "22"},
+    "account": {"stringValue": "ACCOUNT_ID"},
+    "to": {"stringValue": ""},
+    "date": {"stringValue": "2026-11-24"},
+    "createdBy": {"stringValue": "RECORDER_UID"},
+    "updatedBy": {"stringValue": "RECORDER_UID"},
+    "createdAt": {"integerValue": "1795503600000"},
+    "updatedAt": {"integerValue": "1795503600000"},
+    "rev": {"integerValue": "1"}
+  }
+}

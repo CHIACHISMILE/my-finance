@@ -6,6 +6,7 @@ service cloud.firestore {
     function owner(w) { return signedIn() && w.owner == request.auth.uid; }
     function reader(w) { return signedIn() && (owner(w) || w.members.get(request.auth.uid, '') in ['editor','viewer']); }
     function editor(w) { return signedIn() && (owner(w) || w.members.get(request.auth.uid, '') == 'editor'); }
+    function recorder(w) { return signedIn() && w.members.get(request.auth.uid, '') == 'recorder'; }
     function validWorkspace(d) {
       return d.keys().hasAll(['name','owner','members','categories','createdAt']) && d.keys().hasOnly(['name','owner','members','categories','createdAt']) && d.name is string && d.name.size() > 0 && d.name.size() <= 60 && d.owner is string && d.members is map && d.members.size() <= 100 && d.categories is map && d.createdAt is int;
     }
@@ -31,7 +32,7 @@ service cloud.firestore {
       }
       match /transactions/{id} {
         allow read: if reader(ws(wid));
-        allow create: if editor(ws(wid)) && validTx(request.resource.data,id,wid) && request.resource.data.createdBy == request.auth.uid && request.resource.data.rev == 1;
+        allow create: if (editor(ws(wid)) || (recorder(ws(wid)) && request.resource.data.type in ['expense','income'])) && validTx(request.resource.data,id,wid) && request.resource.data.createdBy == request.auth.uid && request.resource.data.rev == 1;
         allow update: if editor(ws(wid)) && validTx(request.resource.data,id,wid) && request.resource.data.createdBy == resource.data.createdBy && request.resource.data.createdAt == resource.data.createdAt && request.resource.data.rev == resource.data.rev + 1;
         allow delete: if editor(ws(wid));
       }
