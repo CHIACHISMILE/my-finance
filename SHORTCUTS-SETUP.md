@@ -1,12 +1,12 @@
-# MyFinance V1.2｜iPhone 原生捷徑（不開啟 Safari）
+# MyFinance V1.5｜iPhone 原生捷徑（不開啟 Safari）
 
 本版本在原本的 Firestore 架構上新增 recorder 角色，只允許新增收入／支出，不允許讀取、修改或刪除任何帳本資料。原有 Google 登入、帳本和交易維持不變。這份文件是原生捷徑的手動建立說明，不是已簽署的可安裝 .shortcut 檔；需在 iPhone 實際設定及測試。
 
 ## A. 升級現有網站
 
 1. 在原 GitHub repository 的根目錄取代 `index.html`、`sw.js`。不要新建 repository，避免改變網站網址與本機設定。其他檔案可保留。
-2. Firebase Console → Firestore Database → Rules。以本版本 `firestore.rules` 完整取代之前 MyFinance 的規則並 Publish（如果曾自行加入其他規則，先保留備份並合併，勿覆蓋其他應用程式）。
-3. 等 GitHub Pages 部署完成，重新開啟主畫面的 MyFinance，必要時關閉後重開。設定頁面應顯示 v1.2。
+2. 若已使用 V1.2 / V1.3 的 recorder 安全規則，不需更新。若仍使用 V1.0 / V1.1 規則，需先備份原規則，再於 Firebase Console → Firestore Database → Rules 貼上本版本 `firestore.rules` 並 Publish。自訂規則應合併而非覆蓋。
+3. 等 GitHub Pages 部署完成，重新開啟主畫面的 MyFinance，必要時關閉後重開。設定頁面應顯示 v1.5。
 4. 不要刪除現有 Firebase 專案／帳本，也不要清除網站資料。此版本沒有資料庫遷移。
 
 ## B. 建立專用、可撤銷的捷徑帳號

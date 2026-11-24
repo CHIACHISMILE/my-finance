@@ -19,9 +19,15 @@ service cloud.firestore {
     function validTx(d,id,wid) {
       return d.keys().hasAll(['id','type','category','note','amount','account','to','date','createdBy','createdAt','updatedBy','updatedAt','rev']) && d.keys().hasOnly(['id','type','category','note','amount','account','to','date','createdBy','createdAt','updatedBy','updatedAt','rev']) && d.id == id && d.type in ['expense','income','transfer','refund','adjust'] && d.category is string && d.category.size() > 0 && d.category.size() <= 40 && d.note is string && d.note.size() <= 120 && d.amount is int && d.amount >= -100000000000 && d.amount <= 100000000000 && d.amount != 0 && (d.type == 'adjust' || d.amount > 0) && d.date is string && d.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') && accountOK(wid,d.account,d.date) && (d.type == 'transfer' ? (d.to != d.account && accountOK(wid,d.to,d.date)) : d.to == '') && d.createdBy is string && d.updatedBy == request.auth.uid && d.createdAt is int && d.updatedAt is int && d.rev is int;
     }
+    // Private per-user preferences; no ability to read other users' preferences.
+    match /users/{uid}/preferences/{wid} {
+      allow get: if signedIn() && request.auth.uid == uid && reader(ws(wid));
+      allow create, update: if signedIn() && request.auth.uid == uid && reader(ws(wid)) && request.resource.data.keys().hasOnly(['pins']) && request.resource.data.pins is list && request.resource.data.pins.size() <= 200;
+      allow list, delete: if false;
+    }
     match /workspaces/{wid} {
       allow get: if reader(resource.data);
-      allow list: if false;
+      allow list: if signedIn() && (resource.data.owner == request.auth.uid || resource.data.members[request.auth.uid] in ['editor','viewer']);
       allow create: if signedIn() && validWorkspace(request.resource.data) && request.resource.data.owner == request.auth.uid && request.resource.data.members.size() == 0;
       allow update: if owner(resource.data) && validWorkspace(request.resource.data) && request.resource.data.owner == resource.data.owner && request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if false;
