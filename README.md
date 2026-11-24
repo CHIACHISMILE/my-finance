@@ -1,2 +1,25 @@
-# my-finance
-Personal Finance Management
+# MyFinance v1.0
+
+手機優先的繁體中文個人財務 PWA。所有金額以整數新台幣記錄。初次開啟為空白本機模式，可從設定載入假設範例資料。
+
+## iPhone 部署（不需要安裝 App）
+1. Safari 開啟 github.com/new，建立公開 `my-finance` repository，勾選 Add README。
+2. 將 ZIP 儲存至檔案 App、解壓縮。到 repository 的 Code → Add file → Upload files，選取解壓後的 5 個程式檔案（index.html、manifest.json、sw.js、icon.png、firestore.rules），放在 repository 根目錄，Commit changes。README 可不傳。
+3. Settings → Pages → Build and deployment → Deploy from a branch → main / (root) → Save。網站會顯示在 Pages 頁面。使用 Safari 開啟 `https://你的GitHub帳號.github.io/my-finance/`。
+4. 先在本機試用：點右上角本機模式，載入範例資料。範例資料絕不會自動傳到雲端。
+5. 分享 → 加入主畫面 → 以網頁 App 開啟。主畫面 App 和 Safari 的本機資料可能分開，因此請在正式使用的入口設定。
+
+## Firebase 多人模式
+1. https://console.firebase.google.com/ 建立專案 MyFinance（Spark 免費方案；Analytics 可關閉）。Project Overview → Web app（</>）→ Register app，複製 firebaseConfig（不要提供服務帳戶私鑰）。
+2. Authentication → Get started → Sign-in method → Google → Enable，設定支援電子郵件。Authentication → Settings → Authorized domains → Add domain，加入 `你的GitHub帳號.github.io`（只填網域，不加 https 或路徑）。
+3. Firestore Database → Create database → 選擇位置、Production mode。Rules → 將本專案 firestore.rules 完整貼上，Publish。不要使用公開讀寫或 Test mode。若 Rules 編譯失敗，請先不要輸入私人資料。
+4. App → 右上角設定 → Firebase 連線設定，貼上 firebaseConfig → 儲存。Google 登入 → 建立自己的新帳本。不同帳本使用獨立 ID。每個裝置需貼上同一個 Firebase Web 設定；該設定不是管理員密碼。
+5. 邀請其他人：對方用相同網站及 Firebase 設定登入 Google，複製自己的 UID 給你。你在帳本設定填入對方 UID，選 editor 或 viewer，按授權成員，再把帳本 ID 傳給對方。對方在「開啟其他帳本」貼上帳本 ID。未授權者即使有 ID 也不能讀取帳本。移除成員後不能繼續從伺服器讀取，但無法撤回以前下載的資料。
+6. 先使用假資料驗證：擁有者、編輯者、瀏覽者、未授權者四種權限；兩台手機各新增一筆、重新整理、編輯同一筆、撤銷權限。Google 登入採 popup；若 iOS 主畫面版本不相容，先使用 Safari，勿假設登入狀態自動共用。
+
+## 資料處理
+- 本機：localStorage，可能因清除網站資料而遺失。雲端：Firestore，即時監聽；雲端模式的交易寫入需網路。雲端與本機資料分開，無自動搬移。
+- 信用卡、貸款起始欠款以正數輸入，系統自動記負值；繳信用卡及投資投入使用轉帳。投資市值用調整交易，費用另記支出。退款會沖減退款當月的支出。資產歷史依開戶日、交易與手動估值重建，不等同即時市價。
+- 設定可匯出 JSON、CSV，再選儲存到檔案 iCloud Drive。JSON 還原目前只支援本機資料；雲端 JSON 不會直接覆蓋雲端帳本。
+- CSV 可用 Numbers 或其他試算表開啟。
+- 此版本的安全規則、雲端登入和雙手機協作仍需在你的 Firebase 專案實測。已提供基本的角色存取規則與交易 revision 衝突檢查；尚無不可竄改稽核紀錄。沒有自動銀行/券商同步、外幣匯率、預算、常用頻率排序與最愛釘選。近期交易會帶入分類、備註、金額與帳戶。

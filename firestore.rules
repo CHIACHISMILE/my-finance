@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function ws(id) { return get(/databases/$(database)/documents/workspaces/$(id)).data; }
+    function owner(w) { return signedIn() && w.owner == request.auth.uid; }
+    function reader(w) { return signedIn() && (owner(w) || w.members.get(request.auth.uid, '') in ['editor','viewer']); }
+    function editor(w) { return signedIn() && (owner(w) || w.members.get(request.auth.uid, '') == 'editor'); }
+    function validWorkspace(d) {
+      return d.keys().hasAll(['name','owner','members','categories','createdAt']) && d.keys().hasOnly(['name','owner','members','categories','createdAt']) && d.name is string && d.name.size() > 0 && d.name.size() <= 60 && d.owner is string && d.members is map && d.members.size() <= 100 && d.categories is map && d.createdAt is int;
+    }
+    function validAccount(d, id) {
+      return d.keys().hasAll(['id','name','type','opening','openDate','createdBy','createdAt']) && d.keys().hasOnly(['id','name','type','opening','openDate','createdBy','createdAt']) && d.id == id && d.name is string && d.name.size() > 0 && d.name.size() <= 60 && d.type in ['cash','bank','investment','other','credit','loan'] && d.opening is int && d.opening >= -100000000000 && d.opening <= 100000000000 && ((d.type in ['credit','loan'] && d.opening <= 0) || (!(d.type in ['credit','loan']) && d.opening >= 0)) && d.openDate is string && d.openDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') && d.createdAt is int && d.createdBy == request.auth.uid;
+    }
+    function accountOK(wid, aid, date) {
+      return aid is string && aid.matches('^[A-Za-z0-9_-]{1,128}$') && exists(/databases/$(database)/documents/workspaces/$(wid)/accounts/$(aid)) && get(/databases/$(database)/documents/workspaces/$(wid)/accounts/$(aid)).data.openDate <= date;
+    }
+    function validTx(d,id,wid) {
+      return d.keys().hasAll(['id','type','category','note','amount','account','to','date','createdBy','createdAt','updatedBy','updatedAt','rev']) && d.keys().hasOnly(['id','type','category','note','amount','account','to','date','createdBy','createdAt','updatedBy','updatedAt','rev']) && d.id == id && d.type in ['expense','income','transfer','refund','adjust'] && d.category is string && d.category.size() > 0 && d.category.size() <= 40 && d.note is string && d.note.size() <= 120 && d.amount is int && d.amount >= -100000000000 && d.amount <= 100000000000 && d.amount != 0 && (d.type == 'adjust' || d.amount > 0) && d.date is string && d.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') && accountOK(wid,d.account,d.date) && (d.type == 'transfer' ? (d.to != d.account && accountOK(wid,d.to,d.date)) : d.to == '') && d.createdBy is string && d.updatedBy == request.auth.uid && d.createdAt is int && d.updatedAt is int && d.rev is int;
+    }
+    match /workspaces/{wid} {
+      allow get: if reader(resource.data);
+      allow list: if false;
+      allow create: if signedIn() && validWorkspace(request.resource.data) && request.resource.data.owner == request.auth.uid && request.resource.data.members.size() == 0;
+      allow update: if owner(resource.data) && validWorkspace(request.resource.data) && request.resource.data.owner == resource.data.owner && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false;
+      match /accounts/{id} {
+        allow read: if reader(ws(wid));
+        allow create: if editor(ws(wid)) && validAccount(request.resource.data,id);
+        allow update, delete: if false;
+      }
+      match /transactions/{id} {
+        allow read: if reader(ws(wid));
+        allow create: if editor(ws(wid)) && validTx(request.resource.data,id,wid) && request.resource.data.createdBy == request.auth.uid && request.resource.data.rev == 1;
+        allow update: if editor(ws(wid)) && validTx(request.resource.data,id,wid) && request.resource.data.createdBy == resource.data.createdBy && request.resource.data.createdAt == resource.data.createdAt && request.resource.data.rev == resource.data.rev + 1;
+        allow delete: if editor(ws(wid));
+      }
+    }
+  }
+}
