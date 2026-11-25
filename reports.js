@@ -19,6 +19,8 @@ function cashPeriod(rows,accounts,range,today,balanceAt){
  const closing=cashPosition(accounts,balanceAt(end));
  return {opening,initial,adjustment,closing,in:f.in,out:f.out,net:f.in-f.out,end,other:closing-opening-initial-adjustment-f.in+f.out};
 }
-function cashRing(closing,out){if(closing<0)return {base:'#e8b7b0',part:'#f1d3b4',percent:0,deficit:true,empty:false};const total=closing+out;return {base:'#b7d5ec',part:'#f1d3b4',percent:total?Math.max(0,Math.min(100,out/total*100)):0,deficit:false,empty:total===0};}
-root.MFReports={flow,summarize,rangeFilter,investment,liquid,cashPosition,cashPeriod,cashRing};if(typeof module!=='undefined')module.exports=root.MFReports;
+function displayBalance(f,mode){return mode==='all'?f.closing:f.net;}
+function consumption(rows){return rows.reduce((s,t)=>{if(t.type==='expense'){s.gross+=t.amount;s.net+=t.amount;}if(t.type==='refund'){s.refunds+=t.amount;s.net-=t.amount;}return s;},{gross:0,refunds:0,net:0});}
+function cashRing(balance,out){if(balance<0){const gap=-balance,covered=Math.max(0,out-gap),total=covered+gap;return {base:'#e8b7b0',part:'#f1d3b4',percent:total?covered/total*100:0,deficit:true,empty:false};}const total=balance+out;return {base:'#b7d5ec',part:'#f1d3b4',percent:total?Math.max(0,Math.min(100,out/total*100)):0,deficit:false,empty:total===0};}
+root.MFReports={flow,summarize,rangeFilter,investment,liquid,cashPosition,cashPeriod,cashRing,displayBalance,consumption};if(typeof module!=='undefined')module.exports=root.MFReports;
 })(globalThis);
