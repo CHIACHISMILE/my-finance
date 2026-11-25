@@ -1,1 +1,19 @@
-<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MyFinance V1.5.1 使用手冊</title><style>body{margin:0;background:#faf7f2;color:#354c62;font:16px/1.7 -apple-system,BlinkMacSystemFont,sans-serif}main{max-width:680px;margin:auto;padding:24px 16px}h1{font-size:30px;margin:0}h2{font-size:20px;margin:0 0 8px}section{background:white;border:1px solid #e0e5ea;border-radius:16px;padding:18px;margin:16px 0}p{margin:6px 0}small{color:#586b7d}ol,ul{padding-left:22px}strong{color:#354c62}.note{background:#f3e4ce;border-radius:10px;padding:12px}</style><main><h1>myfinance.</h1><small>V1.5.1 · 簡明使用手冊</small><section><h2>01｜更新</h2><ol><li>先備份舊帳本 JSON 至私人 iCloud Drive。</li><li>若已使用 V1.5 安全規則，無需更新；從 V1.4 或更早升級才需依 V1.5 說明更新規則。</li><li>GitHub 替換 index.html、sw.js、manifest.json、icon.png，確認 Pages 部署成功。</li><li>完全關閉後重開 App，確認設定顯示 v1.5.1。</li></ol><p class="note">不要重新建立 Firebase，也不要刪除 App 或清除網站資料。</p></section><section><h2>02｜找回與切換帳本</h2><p>使用同一 Google 帳號與 Firebase 專案登入。設定 → 我的帳本，即可點選有權限的帳本。本機會記住上次使用的帳本。</p><p>若未顯示，先按重新整理；仍找不到，到 Firebase → Firestore Database → Data → workspaces，複製原帳本 ID，回 App 手動開啟。</p></section><section><h2>03｜兩人共同使用</h2><ol><li>你保留自己的私人帳本；對方用自己的 Google 帳號建立私人帳本。</li><li>你另建立「共同帳本」，請對方傳給你設定頁的 UID。</li><li>在共同帳本授權對方為編輯者（Editor）。</li><li>對方重新整理我的帳本，選擇共同帳本；必要時手動輸入帳本 ID。</li></ol><p>只有共同帳本的資料會共享。切換帳本後才記帳，不要重複記入兩本。共同帳本若使用共同資金，建立專屬共同帳戶；個人代墊及分攤目前須另外記錄，沒有自動結算。</p></section><section><h2>04｜記帳</h2><ol><li>確認目前帳本，點中央＋。</li><li>選支出、收入、轉帳、退款或調整，選分類。</li><li>輸入金額、項目，確認付款帳戶與日期。</li><li>按鍵盤右側儲存。</li></ol><p>點近期交易會帶入原金額、備註與帳戶。分類區可滑動，鍵盤固定。買 ETF、ATM 提款、繳卡費用轉帳；股價變動用調整。</p></section><section><h2>05｜分類及圖示</h2><p>加油、電費已內建。常用分類按最近 30 天的本人交易排序，近 7 天權重更高；下次開啟記帳頁時更新。選分類後按釘選，可固定於最前面。</p><p>擁有者按「＋新分類」，輸入名稱、選圖示及色彩，按新增。圖示和顏色會在記帳、總覽、明細與分析統一呈現。</p></section><section><h2>06｜查帳、備份、捷徑</h2><p>總覽：依日期查看交易。資產：管理帳戶及餘額。分析：查看收支圖表。明細：搜尋、修改、刪除、匯出 CSV。</p><p>設定 → 完整 JSON 備份 → 存至私人 iCloud Drive。原生捷徑可沿用；如要使用新分類，重新匯出設定 JSON。</p></section><section><h2>07｜帳號安全與驗收</h2><p>Owner 可管理成員；Editor 可共同記帳；Viewer 只讀；Recorder 僅能新增收入／支出。請勿共享密碼或把備份上傳公開 GitHub。</p><p>先用假資料驗證：登出再登入、兩機同步、未受邀的人無法讀取、Viewer 無法寫入。取消共享不能收回已匯出的資料。</p><p class="note">本版已通過本機瀏覽器測試。真實 Firebase、iPhone 捷徑及實機畫面仍需驗證。合併報表與自動分攤結算尚未提供。</p></section></main></html>
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MyFinance 2.0 使用手冊</title><style>body{background:#faf7f2;color:#354c62;font:16px/1.7 -apple-system,sans-serif;max-width:680px;margin:auto;padding:24px}h1{font-size:25px}h2{background:#b7d5ec;padding:10px;border-radius:12px;font-size:19px}p{margin:10px 0}li{margin:8px 0}</style><body>
+<h1>MyFinance 2.0 Beta｜極簡記帳・離線優先</h1>
+<p>這是從 V1.5.1 延續的測試版，不變更 Firebase 的帳本、帳戶、交易、分類、權限或捷徑 API 資料格式。V1.5 Firestore Rules 保持原樣。</p>
+<h2>更新（已有 V1.5 / V1.5.1）</h2>
+<p>1. 先在舊版設定匯出完整 JSON，存到 iCloud。也建議保留 GitHub 舊版 commit。</p>
+<p>2. 將更新包內的 index.html、offline.js（新增）、sw.js、manifest.json、icon.png 一起上傳原 Repository 根目錄，確認 GitHub Pages 部署成功。不要上傳私人備份或捷徑密碼。</p>
+<p>3. 連線完全關閉再開啟 MyFinance，確認設定底部 v2.0。若仍為舊版，先確認部署及再重新開啟；不要清除網站資料。</p>
+<p>4. 用原 Google 帳號登入（如需），開啟每一本想離線使用的帳本，等待顯示已同步。</p>
+<p>5. 先用假資料或獨立測試帳本驗收，再投入日常使用。Firebase Config、Rules 及原捷徑不用重設（前提為已用 V1.5 規則）。</p>
+<h2>日常操作</h2>
+<p>- 記帳：選支出／收入／轉帳、分類、金額與項目、帳戶和日期，按 ✓。</p>
+<p>- 其他功能：記帳頁右上 ⋯ 可選退款／估值調整、釘選、新分類，編輯交易時可刪除。分類按使用頻率排序不再顯示多餘說明。只在分類區滑動查看更多分類；小螢幕、系統文字鍵盤可能需要例外捲動。</p>
+<p>- 離線：已下載的帳本可查看總覽、資產、明細及分析，可新增、修改、刪除交易。變更先寫入本機 IndexedDB，恢復連線且 App 開啟後送出。首次登入、新帳本、帳戶建立、成員管理與分類管理需要網路。</p>
+<p>- 同步：顯示待同步筆數時請不要重新記同一筆。設定內可重試、匯出待同步紀錄或在確認後捨棄全部待同步變更。遇到衝突，先匯出待同步紀錄、核對雲端，再決定如何處理；匯出的待同步檔是人工復原用，尚未提供自動匯入。</p>
+<p>- 隱私：本機快取按 Firebase 專案和使用者 UID 隔離，正式登出需連線並先處理未同步資料。快取不是額外加密的保險庫，請使用自己的已鎖定手機；離線無法即時知道雲端已撤銷權限。撤銷權限後的本機讀取要待重新連線確認。已匯出的資料無法收回。</p>
+<p>- 捷徑：沿用既有 Recorder 專用帳號及 HTTPS REST API。仍需網路，不使用網頁本機離線佇列。見 SHORTCUTS-SETUP.md。</p>
+<h2>測試與限制</h2>
+<p>見 TEST-REPORT.md。Node 模擬測試通過，真實瀏覽器的 Service Worker、IndexedDB、實際 Firebase 及 iPhone 仍待驗證。離線資料可能被 iOS 清理，不等同正式備份；重要資料請定期匯出。尚未實作共同分攤、跨帳本合併、原生 Face ID、原生 App Intents。核心 UI 與 Firebase 串接仍保留於 index.html，本版先獨立離線儲存模組，並非完整框架重寫。</p>
+</body></html>

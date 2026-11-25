@@ -1,23 +1,36 @@
-# V1.5.1 藍杏平衡回歸測試
+# MyFinance 2.0 Beta 測試記錄
 
-- JavaScript 與 Service Worker 語法檢查：通過。
-- Chromium 模擬四種手機尺寸、五種交易類型：儲存鍵可見且記帳主區無垂直捲動；近期交易帶入、計算機及儲存：通過。
-- 本機新增、修改、刪除、資產計算、五類交易、帳戶新增、明細篩選、草稿保留、設定解析與模擬權限／逾時：通過。
-- Firebase 規則與 V1.5 完全一致。
-- 圖示及 manifest 已改色並加入版本化網址；實際 iOS 主畫面圖示更新及 Firebase 雲端同步未在實機驗證。
+## 執行完成
+- Node.js 語法檢查：index.html 內嵌 JavaScript、offline.js、sw.js。
+- 使用 Node VM、模擬 DOM、模擬儲存及模擬 Firestore transaction 執行 test-logic.cjs。共 15 項通過：
+- PASS: compact record form
+- PASS: overflow controls
+- PASS: calculator
+- PASS: local save
+- PASS: offline create and balance
+- PASS: restore from persisted mock store
+- PASS: separate workspace
+- PASS: offline edit
+- PASS: offline delete
+- PASS: mock sync create/update/delete sequence
+- PASS: idempotent retry
+- PASS: revision conflict
+- PASS: conflict remains pending without overwrite
+- PASS: identity pointer cleared
+- PASS: unexpected auth change retains only pending operations
+- 比對 V1.5 Firestore 安全規則：完全相同。
 
-# V1.5 測試報告
+## 尚未驗證
+目前瀏覽器環境封鎖本機及測試網頁導覽，因此無法在真實瀏覽器測試排版、Service Worker 快取及實際 IndexedDB 持久化。測試中的儲存與 Firebase 均為替身，不代表正式雲端安全規則、並行寫入或 iOS 真機已通過。
 
-已完成（Chromium 模擬手機、非 iOS 實機）：
-- JavaScript 語法檢查。
-- 402×874、390×844、375×667、360×640：五種交易模式，鍵盤與儲存鍵位於可視區；主編輯區不需捲動。
-- 本機交易新增、修改、刪除；收入、支出、退款、轉帳及調整；信用卡與投資計算；帳戶新增；明細切換與篩選；草稿保留。
-- 近期交易帶入、四則運算。
-- 電費、加油、釘選下次生效、近期加權排序、依建立者分開排序。
-- 自訂圖示與顏色儲存、總覽日期分組、分析色彩、明細色彩、JSON 備份驗證。
-- 使用模擬 Firestore 查詢回傳，確認兩類帳本清單可合併顯示（未對真實 Firebase 執行）。
-- V1.4 雲端等待逾時復原及 Viewer 介面限制回歸測試。
+建議部署後使用測試帳本：
+1. 連線開啟每個帳本並等待同步。
+2. 開飛航模式，關閉 App 後重開：檢查帳本、資產、明細、圖表。
+3. 新增測試交易 1 元，重開確認保留，修改再刪除。
+4. 恢復連線、開啟 App，確認待同步筆數歸零，且另一台手機沒有重複交易。
+5. 兩台手機修改同一交易，確認較舊版本不會覆蓋較新版本，衝突提示及匯出功能正常。
+6. 用 Viewer、Recorder 與未受邀帳號確認不能讀寫無權限資料。
+7. 登出及換帳號確認不顯示前一位使用者的快取。撤銷成員後，讓對方重新連線確認帳本被隱藏。
+8. 在 iPhone 確認分類區可滑動、鍵盤可按、頂部無遮擋。驗證捷徑仍可新增交易。
 
-尚待實機：Firebase Rules 編譯發布、owner/member 查詢、陌生人及 Recorder 拒絕讀取、取消共享、不同手機同步釘選、實際 iOS PWA、捷徑直寫。若查詢被拒絕，使用手動 ID 找回帳本，不能為了排錯改成所有人可讀。
-
-尚未實作：付款人/分攤比例/自動結算、跨帳本合併報表與跨裝置記住最後使用帳本（新裝置會從有權限帳本選一本；本機可記住上次使用）。
+未完成上述實機驗收前，請不要將此版本視為正式穩定版。
