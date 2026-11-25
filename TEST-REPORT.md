@@ -1,12 +1,7 @@
-# MyFinance V2.1 測試報告
+# V2.2 檢查紀錄
 
-## 已執行
-- Node VM：28 項邏輯測試通過（`node test-logic.cjs`）。包含原 V2.0 的 15 項本機／模擬離線與同步測試、13 項新增估值與帳戶、分類測試。IndexedDB 以記憶體模擬，並非實際持久化測試。
-- `node --check sw.js`、`node --check offline.js` 通過。
-- Chromium 402×874 手機 viewport，以 set_content 和模擬 localStorage 載入實際 HTML，成功開啟記帳及估值頁，取得選中 icon 與日期欄位 bounding boxes，輸出兩張預覽。日期輸入框垂直居中（51px 容器、36px 控制項、上下各 7.5px）；未測 iOS WebKit。實際 file:// 導航遭環境政策阻擋，未測真實 service worker 或 IndexedDB。
+已執行 Node JavaScript 語法檢查；以 VM 模擬 DOM 並直接執行實際程式 30 項斷言，全部通過。包含首頁生成、無快速記帳卡片、現金流入流出、淨資產、信用卡刷卡及還款、股票轉入提領、現金銀行互轉、退款、估值不計現金流、投資累計轉入與轉帳後價值變化、帳本選單、所有時間及自訂空期間、收支分析、資產、投資、分類群組、記帳與估值頁、四則運算及 Raw Data 生成。
 
-## 仍需驗證
-- Firebase 安全規則僅靜態檢查，未部署或執行 emulator 驗證。先在測試帳本驗證 Owner、Editor、Viewer、Recorder；Recorder 無權編輯帳戶，封存帳戶不可新增交易。
-- iPhone PWA 日期置中、分類滑動、飛航模式及多人同步。
-- 絕對估值在本機換算為差額，不是雲端原子覆蓋。已知本機餘額變動時阻擋儲存；無法防止其他裝置尚未同步的變動，需同步後核對。
-- 封存不是實體刪除；仍有餘額的封存帳戶繼續計入總額。修改起始餘額會影響歷史圖表。分類改名保留底層分類鍵，舊版與捷徑仍可能顯示原名。
+以 402×874 Chromium viewport 對程式產生的靜態 HTML 進行排版截圖；六個頁面沒有水平溢出，記帳頁的靜態高度為 874px。這是靜態預覽，不是完整互動測試；不代表 iOS Safari 已驗收。瀏覽器執行 localhost 網頁受到環境限制（ERR_BLOCKED_BY_ADMINISTRATOR），無法完成完整瀏覽器點擊操作、Service Worker 離線重開、IndexedDB 真實持久化等測試。未連線使用者 Firebase，不宣稱已通過雲端安全驗收。
+
+部署後須驗證：新增/編輯/刪除、分類新增及群組設定、帳本切換、飛航模式關閉重開及待同步、兩台手機衝突與權限、捷徑寫入、iOS safe area 與日期。先使用測試資料。
