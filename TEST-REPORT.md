@@ -1,36 +1,12 @@
-# MyFinance 2.0 Beta 測試記錄
+# MyFinance V2.1 測試報告
 
-## 執行完成
-- Node.js 語法檢查：index.html 內嵌 JavaScript、offline.js、sw.js。
-- 使用 Node VM、模擬 DOM、模擬儲存及模擬 Firestore transaction 執行 test-logic.cjs。共 15 項通過：
-- PASS: compact record form
-- PASS: overflow controls
-- PASS: calculator
-- PASS: local save
-- PASS: offline create and balance
-- PASS: restore from persisted mock store
-- PASS: separate workspace
-- PASS: offline edit
-- PASS: offline delete
-- PASS: mock sync create/update/delete sequence
-- PASS: idempotent retry
-- PASS: revision conflict
-- PASS: conflict remains pending without overwrite
-- PASS: identity pointer cleared
-- PASS: unexpected auth change retains only pending operations
-- 比對 V1.5 Firestore 安全規則：完全相同。
+## 已執行
+- Node VM：28 項邏輯測試通過（`node test-logic.cjs`）。包含原 V2.0 的 15 項本機／模擬離線與同步測試、13 項新增估值與帳戶、分類測試。IndexedDB 以記憶體模擬，並非實際持久化測試。
+- `node --check sw.js`、`node --check offline.js` 通過。
+- Chromium 402×874 手機 viewport，以 set_content 和模擬 localStorage 載入實際 HTML，成功開啟記帳及估值頁，取得選中 icon 與日期欄位 bounding boxes，輸出兩張預覽。日期輸入框垂直居中（51px 容器、36px 控制項、上下各 7.5px）；未測 iOS WebKit。實際 file:// 導航遭環境政策阻擋，未測真實 service worker 或 IndexedDB。
 
-## 尚未驗證
-目前瀏覽器環境封鎖本機及測試網頁導覽，因此無法在真實瀏覽器測試排版、Service Worker 快取及實際 IndexedDB 持久化。測試中的儲存與 Firebase 均為替身，不代表正式雲端安全規則、並行寫入或 iOS 真機已通過。
-
-建議部署後使用測試帳本：
-1. 連線開啟每個帳本並等待同步。
-2. 開飛航模式，關閉 App 後重開：檢查帳本、資產、明細、圖表。
-3. 新增測試交易 1 元，重開確認保留，修改再刪除。
-4. 恢復連線、開啟 App，確認待同步筆數歸零，且另一台手機沒有重複交易。
-5. 兩台手機修改同一交易，確認較舊版本不會覆蓋較新版本，衝突提示及匯出功能正常。
-6. 用 Viewer、Recorder 與未受邀帳號確認不能讀寫無權限資料。
-7. 登出及換帳號確認不顯示前一位使用者的快取。撤銷成員後，讓對方重新連線確認帳本被隱藏。
-8. 在 iPhone 確認分類區可滑動、鍵盤可按、頂部無遮擋。驗證捷徑仍可新增交易。
-
-未完成上述實機驗收前，請不要將此版本視為正式穩定版。
+## 仍需驗證
+- Firebase 安全規則僅靜態檢查，未部署或執行 emulator 驗證。先在測試帳本驗證 Owner、Editor、Viewer、Recorder；Recorder 無權編輯帳戶，封存帳戶不可新增交易。
+- iPhone PWA 日期置中、分類滑動、飛航模式及多人同步。
+- 絕對估值在本機換算為差額，不是雲端原子覆蓋。已知本機餘額變動時阻擋儲存；無法防止其他裝置尚未同步的變動，需同步後核對。
+- 封存不是實體刪除；仍有餘額的封存帳戶繼續計入總額。修改起始餘額會影響歷史圖表。分類改名保留底層分類鍵，舊版與捷徑仍可能顯示原名。

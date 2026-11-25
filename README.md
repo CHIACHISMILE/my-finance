@@ -19,3 +19,6 @@
 
 ## 測試與限制
 見 TEST-REPORT.md。Node 模擬測試通過，真實瀏覽器的 Service Worker、IndexedDB、實際 Firebase 及 iPhone 仍待驗證。離線資料可能被 iOS 清理，不等同正式備份；重要資料請定期匯出。尚未實作共同分攤、跨帳本合併、原生 Face ID、原生 App Intents。核心 UI 與 Firebase 串接仍保留於 index.html，本版先獨立離線儲存模組，並非完整框架重寫。
+
+## V2.1 更新（覆蓋前述舊版本部署說明）
+先匯出 JSON 備份，確認待同步交易為零。更新 Firebase Firestore Rules（本包 firestore.rules），再同時部署 index.html、sw.js、offline.js、manifest.json、icon.png。保留原 Firebase 專案與帳本。新規則允許 Owner/Editor 修改帳戶，實體刪除仍禁止；封存保留歷史和剩餘餘額，並禁止新增交易使用封存帳戶。起始日期只可提前。估值採選定日期截至當日的餘額，編輯時排除原調整紀錄。數字直接覆蓋、先按加減以現值為起點，儲存仍為差額。離線或多人同時交易可能導致最終餘額不同，須同步後核對。分類可改顯示名稱、圖示、顏色，穩定分類鍵保留。舊手機費分類顯示為電話費，未批次修改雲端原始紀錄。捷徑匯出需重新整理封存帳戶的設定。使用者權限未改。實際 iOS 與 Firebase 測試仍未完成。

@@ -4,7 +4,7 @@
 <h2>更新（已有 V1.5 / V1.5.1）</h2>
 <p>1. 先在舊版設定匯出完整 JSON，存到 iCloud。也建議保留 GitHub 舊版 commit。</p>
 <p>2. 將更新包內的 index.html、offline.js（新增）、sw.js、manifest.json、icon.png 一起上傳原 Repository 根目錄，確認 GitHub Pages 部署成功。不要上傳私人備份或捷徑密碼。</p>
-<p>3. 連線完全關閉再開啟 MyFinance，確認設定底部 v2.0。若仍為舊版，先確認部署及再重新開啟；不要清除網站資料。</p>
+<p>3. 連線完全關閉再開啟 MyFinance，確認設定底部 v2.1。若仍為舊版，先確認部署及再重新開啟；不要清除網站資料。</p>
 <p>4. 用原 Google 帳號登入（如需），開啟每一本想離線使用的帳本，等待顯示已同步。</p>
 <p>5. 先用假資料或獨立測試帳本驗收，再投入日常使用。Firebase Config、Rules 及原捷徑不用重設（前提為已用 V1.5 規則）。</p>
 <h2>日常操作</h2>
@@ -16,4 +16,4 @@
 <p>- 捷徑：沿用既有 Recorder 專用帳號及 HTTPS REST API。仍需網路，不使用網頁本機離線佇列。見 SHORTCUTS-SETUP.md。</p>
 <h2>測試與限制</h2>
 <p>見 TEST-REPORT.md。Node 模擬測試通過，真實瀏覽器的 Service Worker、IndexedDB、實際 Firebase 及 iPhone 仍待驗證。離線資料可能被 iOS 清理，不等同正式備份；重要資料請定期匯出。尚未實作共同分攤、跨帳本合併、原生 Face ID、原生 App Intents。核心 UI 與 Firebase 串接仍保留於 index.html，本版先獨立離線儲存模組，並非完整框架重寫。</p>
-</body></html>
+<section><h2>V2.1｜帳戶與估值</h2><p>資產 → 帳戶旁「⋯」：改名稱、類型、起始餘額，或封存／恢復。封存保留歷史及餘額；起始日期只可提前。</p><p>資產 → 調整：看到原餘額後，直接按數字即可輸入新餘額；先按 + 或 − 則以原餘額加減。負餘額用 ±。確認前看差額。多人同時操作或離線時，需同步後核對。</p><p>記帳 → 選分類 → ⋯ → 編輯此分類：修改名稱、圖示、顏色（雲端僅擁有者）。歷史交易保留原分類鍵。</p><p>更新前備份、確認待同步筆數為零；本版需更新 Firestore Rules 及 GitHub 程式檔。實際 iPhone 及 Firebase 尚待驗收。</p></section></body></html>
